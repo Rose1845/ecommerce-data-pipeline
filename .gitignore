@@ -1,0 +1,13 @@
+.venv/
+.env
+data/
+logs/
+output/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.csv
+*.json
+*.db

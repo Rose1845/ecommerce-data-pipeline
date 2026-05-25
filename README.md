@@ -1,1 +1,1 @@
-# ecommerce-data-pipeline
+# Ecommerce PySpark ETL pipeline
