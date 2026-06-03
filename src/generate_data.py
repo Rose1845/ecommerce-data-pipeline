@@ -12,11 +12,15 @@ def extract_all_data(spark):
     """Combine data from multiple sources via joins"""
 
     orders = extract_sales_data(spark, "data/orders.csv")
+    orders.write.mode("overwrite").parquet(
+        "data/orders.parquet").saveasTable("orders")
     print(orders.schema)
     order_items = extract_sales_data(spark, "data/order_items.csv")
     print(order_items.schema)
 
     customers = extract_sales_data(spark, "data/customers.csv")
+    customers.write.mode("overwrite").parquet(
+        "data/customers.parquet").saveasTable("customers")
     print(customers.schema)
 
     orders_with_items = orders.join(order_items, on="order_id", how="left")
