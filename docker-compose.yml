@@ -1,28 +1,41 @@
-
 services:
   spark-master:
     image: apache/spark:3.5.1
     container_name: spark-master
     hostname: spark-master
+    user: root
+    environment:
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_MASTER_HOST=spark-master
     command: >
       bash -c "
-      /opt/spark/sbin/start-master.sh &&
-      tail -f /opt/spark/logs/spark--org.apache.spark.deploy.master*.out
+        /opt/spark/sbin/start-master.sh &&
+        sleep 2 &&
+        tail -f /opt/spark/logs/spark--org.apache.spark.deploy.master*.out
       "
     ports:
-      - "8080:8080"   # Spark Master UI
-      - "7077:7077"   # Spark Master port
+      - "8080:8080"
+      - "7077:7077"
     volumes:
       - ./app:/opt/spark-app
       - ./data:/opt/spark-data
+    networks:
+      - spark-net
 
   spark-worker-1:
     image: apache/spark:3.5.1
     container_name: spark-worker-1
     hostname: spark-worker-1
+    user: root
+    environment:
+      - SPARK_LOCAL_IP=spark-worker-1
+      - SPARK_WORKER_HOSTNAME=spark-worker-1
     command: >
-      bash -c "/opt/spark/sbin/start-worker.sh spark://spark-master:7077 --cores 2 --memory 2g &&
-      tail -f /opt/spark/logs/spark--org.apache.spark.deploy.worker*.out"
+      bash -c "
+        /opt/spark/sbin/start-worker.sh spark://spark-master:7077 --cores 2 --memory 2g &&
+        sleep 2 &&
+        tail -f /opt/spark/logs/spark--org.apache.spark.deploy.worker*.out
+      "
     ports:
       - "8081:8081"
       - "4040:4040"
@@ -31,14 +44,23 @@ services:
     volumes:
       - ./app:/opt/spark-app
       - ./data:/opt/spark-data
+    networks:
+      - spark-net
 
   spark-worker-2:
     image: apache/spark:3.5.1
     container_name: spark-worker-2
     hostname: spark-worker-2
+    user: root
+    environment:
+      - SPARK_LOCAL_IP=spark-worker-2
+      - SPARK_WORKER_HOSTNAME=spark-worker-2
     command: >
-      bash -c "/opt/spark/sbin/start-worker.sh spark://spark-master:7077 --cores 2 --memory 2g &&
-      tail -f /opt/spark/logs/spark--org.apache.spark.deploy.worker*.out"
+      bash -c "
+        /opt/spark/sbin/start-worker.sh spark://spark-master:7077 --cores 2 --memory 2g &&
+        sleep 2 &&
+        tail -f /opt/spark/logs/spark--org.apache.spark.deploy.worker*.out
+      "
     ports:
       - "8082:8081"
     depends_on:
@@ -46,3 +68,9 @@ services:
     volumes:
       - ./app:/opt/spark-app
       - ./data:/opt/spark-data
+    networks:
+      - spark-net
+
+networks:
+  spark-net:
+    driver: bridge
