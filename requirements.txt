@@ -1,15 +1,14 @@
 # Airflow providers
-apache-airflow-providers-fab==1.5.2
-apache-airflow-providers-apache-spark==3.5.1
-apache-airflow-providers-postgres==5.12.0
-apache-airflow-providers-amazon==8.27.0
+apache-airflow-providers-fab
+apache-airflow-providers-apache-spark
+apache-airflow-providers-postgres
+apache-airflow-providers-amazon
 
 # dbt
 dbt-postgres==1.9.0
 
 # Cassandra
-cassandra-driver==3.29.1
-
+cassandra-driver
 # Kafka
 kafka-python==2.0.2
 
