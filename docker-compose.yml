@@ -26,6 +26,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY:-46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLt0nIe3aI=}
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW_CONN_SPARK_DEFAULT: "spark://spark-master:7077"
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://airflow-apiserver:8080/execution/"
     AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET:-airflow_jwt_secret}
     AIRFLOW__API_AUTH__JWT_ISSUER: ${AIRFLOW__API_AUTH__JWT_ISSUER:-airflow}
@@ -276,8 +277,16 @@ services:
     image: apache/spark:3.5.1
     container_name: ecom_spark_master
     hostname: spark-master
+    user: root
     environment:
-      SPARK_MODE: master
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_MASTER_HOST=spark-master
+    command: >
+      bash -c "
+        /opt/spark/sbin/start-master.sh &&
+        sleep 2 &&
+        tail -f /opt/spark/logs/spark--org.apache.spark.deploy.master*.out
+      "
     ports:
       - "8091:8080"
       - "7077:7077"
@@ -291,11 +300,16 @@ services:
     image: apache/spark:3.5.1
     container_name: ecom_spark_worker
     hostname: spark-worker
+    user: root
     environment:
-      SPARK_MODE: worker
-      SPARK_MASTER_URL: spark://spark-master:7077
-      SPARK_WORKER_MEMORY: 2G
-      SPARK_WORKER_CORES: 2
+      - SPARK_LOCAL_IP=spark-worker
+      - SPARK_WORKER_HOSTNAME=spark-worker
+    command: >
+      bash -c "
+        /opt/spark/sbin/start-worker.sh spark://spark-master:7077 --cores 2 --memory 2g &&
+        sleep 2 &&
+        tail -f /opt/spark/logs/spark--org.apache.spark.deploy.worker*.out
+      "
     depends_on:
       - spark-master
     volumes:
