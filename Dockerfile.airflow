@@ -1,17 +1,5 @@
 
-# FROM apache/airflow:3.2.2
-
-# ARG AIRFLOW_VERSION=3.2.2
-# USER airflow
-
-# COPY requirements.txt /requirements.txt
-# RUN pip install --no-cache-dir \
-#     "apache-airflow==${AIRFLOW_VERSION}" \
-#     -r /requirements.txt
-
-
-
-FROM apache/airflow:3.2.2
+FROM apache/airflow:3.2.2-python3.11
 
 ARG AIRFLOW_VERSION=3.2.2
 
@@ -29,6 +17,8 @@ USER airflow
 
 COPY requirements.txt /requirements.txt
 ENV CASS_DRIVER_NO_CYTHON=1
+
 RUN pip install --no-cache-dir \
-    "apache-airflow==${AIRFLOW_VERSION}" \
+    apache-airflow-providers-apache-spark \
+    apache-airflow-providers-docker \
     -r /requirements.txt

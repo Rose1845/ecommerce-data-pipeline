@@ -1,25 +1,14 @@
-# Airflow providers
+apache-airflow==3.2.2
 apache-airflow-providers-fab
-apache-airflow-providers-apache-spark
+apache-airflow-providers-apache-spark[spark-submit]
 apache-airflow-providers-postgres
+apache-airflow-providers-docker
 apache-airflow-providers-amazon
-
-# dbt
 dbt-postgres==1.9.0
-
-# Cassandra
 cassandra-driver
-# Kafka
 kafka-python==2.0.2
-
-# MinIO
 minio==7.2.7
-
-# HTTP / Debezium management
 requests==2.32.3
-
-# Data generation & pipeline
-faker==33.1.0
 numpy==1.26.4
 pandas==2.2.2
 pyspark==3.5.1
