@@ -37,6 +37,7 @@ x-airflow-common: &airflow-common
     - ./airflow/logs/:/opt/airflow/logs
     - ./airflow/config/:/opt/airflow/config
     - ./airflow/plugins/:/opt/airflow/plugins
+    - ./dbt:/opt/airflow/dbt
     - /var/run/docker.sock:/var/run/docker.sock
     - ./debezium/:/opt/airflow/debezium
     - ./spark/:/opt/airflow/spark
@@ -95,6 +96,7 @@ services:
       - ./airflow/logs/:/opt/airflow/logs
       - ./airflow/plugins/:/opt/airflow/plugins
       - ./debezium/:/opt/airflow/debezium
+      - ./dbt:/opt/airflow/dbt
       - ./spark/:/opt/airflow/spark
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
@@ -121,6 +123,7 @@ services:
       - ./airflow/logs/:/opt/airflow/logs
       - ./airflow/plugins/:/opt/airflow/plugins
       - ./debezium/:/opt/airflow/debezium
+      - ./dbt:/opt/airflow/dbt
       - ./spark/:/opt/airflow/spark
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
@@ -148,6 +151,7 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       - ./debezium:/opt/airflow/debezium
+      - ./dbt:/opt/airflow/dbt
       - ./spark:/opt/airflow/spark
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
@@ -174,6 +178,7 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       - ./debezium:/opt/airflow/debezium
+      - ./dbt:/opt/airflow/dbt
       - ./spark:/opt/airflow/spark
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
@@ -201,6 +206,7 @@ services:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
+      - ./dbt:/opt/airflow/dbt
       - ./debezium:/opt/airflow/debezium
       - ./spark:/opt/airflow/spark
       - /var/run/docker.sock:/var/run/docker.sock
