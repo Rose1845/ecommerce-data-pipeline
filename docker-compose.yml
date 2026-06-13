@@ -33,14 +33,17 @@ x-airflow-common: &airflow-common
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
     AIRFLOW_CONFIG: "/opt/airflow/config/airflow.cfg"
   volumes:
-    - ./airflow/dags:/opt/airflow/dags
-    - ./airflow/logs:/opt/airflow/logs
-    - ./airflow/config:/opt/airflow/config
-    - ./airflow/plugins:/opt/airflow/plugins
+    - ./airflow/dags/:/opt/airflow/dags
+    - ./airflow/logs/:/opt/airflow/logs
+    - ./airflow/config/:/opt/airflow/config
+    - ./airflow/plugins/:/opt/airflow/plugins
     - /var/run/docker.sock:/var/run/docker.sock
-    - ./debezium:/opt/airflow/debezium
-    - ./spark:/opt/airflow/spark
+    - ./debezium/:/opt/airflow/debezium
+    - ./spark/:/opt/airflow/spark
   user: "${AIRFLOW_UID:-50000}:0"
+  group_add:
+    - "${DOCKER_GID:-124}" 
+  restart: always
   networks:
     - platform
   depends_on: &airflow-common-depends-on
@@ -87,6 +90,17 @@ services:
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
     user: "0:0"
+    volumes:
+      - ./airflow/dags/:/opt/airflow/dags
+      - ./airflow/logs/:/opt/airflow/logs
+      - ./airflow/plugins/:/opt/airflow/plugins
+      - ./debezium/:/opt/airflow/debezium
+      - ./spark/:/opt/airflow/spark
+      - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+      -  "${DOCKER_GID:-124}"
+    networks:
+      - platform
     restart: "no"
 
   airflow-apiserver:
@@ -103,11 +117,16 @@ services:
       start_period: 30s
     restart: always
     volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - ./airflow/logs:/opt/airflow/logs
-      - ./airflow/plugins:/opt/airflow/plugins
-      - ./debezium:/opt/airflow/debezium
-      - ./spark:/opt/airflow/spark
+      - ./airflow/dags/:/opt/airflow/dags
+      - ./airflow/logs/:/opt/airflow/logs
+      - ./airflow/plugins/:/opt/airflow/plugins
+      - ./debezium/:/opt/airflow/debezium
+      - ./spark/:/opt/airflow/spark
+      - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+      -  "${DOCKER_GID:-124}"
+    networks:
+      - platform
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -130,6 +149,11 @@ services:
       - ./airflow/plugins:/opt/airflow/plugins
       - ./debezium:/opt/airflow/debezium
       - ./spark:/opt/airflow/spark
+      - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+      -  "${DOCKER_GID:-124}"
+    networks:
+      - platform
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -151,7 +175,12 @@ services:
       - ./airflow/plugins:/opt/airflow/plugins
       - ./debezium:/opt/airflow/debezium
       - ./spark:/opt/airflow/spark
+      - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+      -  "${DOCKER_GID:-124}"
     restart: always
+    networks:
+      - platform
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -174,6 +203,11 @@ services:
       - ./airflow/plugins:/opt/airflow/plugins
       - ./debezium:/opt/airflow/debezium
       - ./spark:/opt/airflow/spark
+      - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+      -  "${DOCKER_GID:-124}"
+    networks:
+      - platform
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -186,12 +220,16 @@ services:
     environment:
       <<: *airflow-common-env
       CONNECTION_CHECK_MAX_COUNT: "0"
+    group_add:
+      -  "${DOCKER_GID:-124}"
     command:
       - bash
       - -c
       - airflow
     depends_on:
       <<: *airflow-common-depends-on
+    networks:
+      - platform
 
   dbt:
     container_name: dbt_container
@@ -299,13 +337,16 @@ services:
       - platform
 
   spark-master:
-    image: apache/spark:3.5.1
+    image: spark-ecom:3.5.1
     container_name: ecom_spark_master
     hostname: spark-master
+    build: 
+      context: ./Dockerfile.spark
     user: root
     environment:
       - SPARK_LOCAL_IP=spark-master
       - SPARK_MASTER_HOST=spark-master
+      - IVY_HOME=/tmp/ivy/
     command: >
       bash -c "
         /opt/spark/sbin/start-master.sh &&
@@ -318,17 +359,20 @@ services:
     volumes:
       - ./spark:/opt/spark-apps
       - spark_logs:/opt/spark/logs
+      - ./data/:/opt/spark-data
+
     networks:
       - platform
 
   spark-worker:
-    image: apache/spark:3.5.1
+    image: spark-ecom:3.5.1
     container_name: ecom_spark_worker
     hostname: spark-worker
     user: root
     environment:
       - SPARK_LOCAL_IP=spark-worker
       - SPARK_WORKER_HOSTNAME=spark-worker
+      - IVY_HOME=/tmp/ivy
     command: >
       bash -c "
         /opt/spark/sbin/start-worker.sh spark://spark-master:7077 --cores 2 --memory 2g &&
@@ -339,6 +383,8 @@ services:
       - spark-master
     volumes:
       - ./spark:/opt/spark-apps
+      - ./data/:/opt/spark-data
+
     networks:
       - platform
 

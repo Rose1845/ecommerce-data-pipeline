@@ -1,0 +1,1 @@
+docker build -f Dockerfile.spark -t spark-ecom:3.5.1 .
