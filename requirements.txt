@@ -1,0 +1,14 @@
+apache-airflow==3.2.2
+apache-airflow-providers-fab==2.0.0
+apache-airflow-providers-apache-spark[spark-submit]
+apache-airflow-providers-postgres
+apache-airflow-providers-docker
+apache-airflow-providers-amazon
+dbt-postgres==1.9.0
+cassandra-driver
+kafka-python==2.0.2
+minio==7.2.7
+requests==2.32.3
+numpy==1.26.4
+pandas==2.2.2
+pyspark==3.5.1
