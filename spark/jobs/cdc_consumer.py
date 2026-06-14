@@ -11,19 +11,21 @@ Run as a long-lived streaming job (separate from the batch DAG):
                  com.datastax.spark:spark-cassandra-connector_2.12:3.4.1 \
       /opt/spark-apps/jobs/03_cdc_consumer.py
 """
-
 import sys
-sys.path.insert(0, "/opt/spark-apps")
+sys.path.insert(0, "/opt/spark-apps")  # noqa: E402
 
-from pyspark.sql import functions as F
+# isort: split
 from pyspark.sql import types as T
+from pyspark.sql import functions as F
 from utils.spark_factory import build_spark
+from typing import Tuple, List, Optional
+
 
 KAFKA_BOOTSTRAP = "kafka:9092"
 KAFKA_TOPICS = "ecom.raw.orders,ecom.raw.order_items,ecom.raw.customers,ecom.raw.returns"
 
 EVENT_SCHEMA = T.StructType([
-    T.StructField("__op",           T.StringType(), True),   
+    T.StructField("__op",           T.StringType(), True),
     T.StructField("__source_table", T.StringType(), True),
     T.StructField("order_id",       T.StringType(), True),
     T.StructField("customer_id",    T.StringType(), True),
@@ -31,10 +33,13 @@ EVENT_SCHEMA = T.StructType([
     T.StructField("item_id",        T.StringType(), True),
 ])
 
+
 def map_op_to_event_type(op: str) -> str:
     return {"c": "INSERT", "u": "UPDATE", "d": "DELETE"}.get(op, "UNKNOWN")
 
+
 map_op_udf = F.udf(map_op_to_event_type, T.StringType())
+
 
 def run():
     spark = build_spark("CDCConsumer")
@@ -83,6 +88,7 @@ def run():
 
     query.awaitTermination()
 
+
 def _write_batch(df, batch_id: int) -> None:
     if df.isEmpty():
         return
@@ -93,6 +99,7 @@ def _write_batch(df, batch_id: int) -> None:
         .mode("append")
         .save()
     )
+
 
 if __name__ == "__main__":
     run()
