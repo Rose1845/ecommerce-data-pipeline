@@ -24,6 +24,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
     AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY:-46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLt0nIe3aI=}
+    AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY:-ecommerce_secret_key_change_in_prod}
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW_CONN_SPARK_DEFAULT: "spark://spark-master:7077"
@@ -366,7 +367,6 @@ services:
       - ./spark:/opt/spark-apps
       - spark_logs:/opt/spark/logs
       - ./data/:/opt/spark-data
-
     networks:
       - platform
 

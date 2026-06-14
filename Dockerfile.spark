@@ -1,7 +1,6 @@
 
 FROM apache/spark:3.5.1
 
-
 ARG POSTGRESQL_VERSION=42.7.3
 ARG HADOOP_AWS_VERSION=3.3.4
 ARG AWS_SDK_VERSION=1.12.262
@@ -49,6 +48,9 @@ RUN echo "=== Installed jars ===" && \
     /opt/spark/jars/spark-cassandra-connector_*.jar \
     /opt/spark/jars/java-driver-*.jar \
     /opt/spark/jars/native-protocol-*.jar
+
+RUN curl -L -o /opt/spark/jars/cassandra.jar \
+    https://repo1.maven.org/maven2/com/datastax/spark/spark-cassandra-connector_2.12/3.4.1/spark-cassandra-connector_2.12-3.4.1.jar
 
 
 USER spark
