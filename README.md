@@ -149,38 +149,38 @@ ecommerce-platform/
 │
 ├── spark/
 │   ├── jobs/
-│   │   ├── 01_ingest_and_clean.py     # Task 01 + 02
-│   │   ├── 02_enrich_and_aggregate.py # Task 03 + 04 + 05
-│   │   └── 03_cdc_consumer.py         # Streaming CDC → Cassandra
+│   │   ├── ingest_and_clean.py     
+│   │   ├── enrich_and_aggregate.py 
+│   │   └── cdc_consumer.py        
 │   └── utils/
-│       └── spark_factory.py           # SparkSession, JDBC, Cassandra helpers
+│       └── spark_factory.py           
 │
 ├── dbt/
 │   ├── dbt_project.yml
 │   ├── profiles.yml
 │   └── models/
-│       ├── staging/               # stg_* views on raw schema
-│       ├── intermediate/          # int_enriched_orders (ephemeral)
-│       └── marts/                 # fct_orders, dim_customers, agg_*
+│       ├── staging/              
+│       ├── intermediate/         
+│       └── marts/                 
 │
 ├── airflow/
 │   ├── dags/
-│   │   └── ecommerce_pipeline.py  # Main DAG
+│   │   └── ecommerce_pipeline.py  
 │   └── config/
-│       └── setup_connections.py   # One-time connection setup
+│       └── setup_connections.py   
 │
 ├── postgres/init/
-│   ├── 01_databases.sql           # DB creation + Debezium user
-│   └── 02_schema.sql              # Raw tables + CDC publication
+│   ├── 01_databases.sql          
+│   └── 02_schema.sql              
 │
 ├── cassandra/init/
-│   └── 01_keyspace.cql            # Keyspace + tables
+│   └── 01_keyspace.cql            
 │
 ├── debezium/
-│   └── postgres-connector.json    # CDC connector config
+│   └── postgres-connector.json    
 │
 └── powerbi/
-    └── POWERBI_SETUP.md           # Import guide + DAX measures
+    └── POWERBI_SETUP.md          
 ```
 
 ---
